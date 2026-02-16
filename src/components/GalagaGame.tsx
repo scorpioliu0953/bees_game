@@ -6,6 +6,7 @@ import { submitScore, getLeaderboard, getPlayerRank, type LeaderboardEntry } fro
 // --- 常數與類型定義 ---
 const CANVAS_WIDTH = 480;
 const DEFAULT_CANVAS_HEIGHT = 640;
+const MAX_CANVAS_HEIGHT = 1200; // canvas 內部解析度上限
 const PLAYER_SIZE = 40;
 const ENEMY_SIZE = 30;
 const BOSS_SIZE = 120;
@@ -70,7 +71,7 @@ const GalagaGame: React.FC = () => {
   const [canvasHeight, setCanvasHeight] = useState(() => {
     if (typeof window !== 'undefined') {
       const ratio = window.innerHeight / window.innerWidth;
-      return Math.round(Math.max(DEFAULT_CANVAS_HEIGHT, CANVAS_WIDTH * ratio));
+      return Math.round(Math.min(MAX_CANVAS_HEIGHT, Math.max(DEFAULT_CANVAS_HEIGHT, CANVAS_WIDTH * ratio)));
     }
     return DEFAULT_CANVAS_HEIGHT;
   });
@@ -79,7 +80,7 @@ const GalagaGame: React.FC = () => {
   useEffect(() => {
     const updateHeight = () => {
       const ratio = window.innerHeight / window.innerWidth;
-      const h = Math.round(Math.max(DEFAULT_CANVAS_HEIGHT, CANVAS_WIDTH * ratio));
+      const h = Math.round(Math.min(MAX_CANVAS_HEIGHT, Math.max(DEFAULT_CANVAS_HEIGHT, CANVAS_WIDTH * ratio)));
       canvasHeightRef.current = h;
       setCanvasHeight(h);
       playerRef.current.y = h - 60;
@@ -1282,7 +1283,10 @@ const GalagaGame: React.FC = () => {
   const drawParticles = (ctx: CanvasRenderingContext2D) => { particlesRef.current.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 3, 3); }); ctx.globalAlpha = 1.0; };
 
   return (
-    <div className="flex flex-col items-center select-none w-full max-w-[480px] h-[100dvh] min-h-0">
+    <div
+      className="flex flex-col items-center select-none max-w-full max-h-[100dvh] min-h-0"
+      style={{ aspectRatio: `${CANVAS_WIDTH} / ${canvasHeight}`, height: '100dvh' }}
+    >
       <div
         ref={gameAreaRef}
         className="relative overflow-hidden bg-black touch-none w-full flex-1 min-h-0"
