@@ -786,6 +786,20 @@ const GalagaGame: React.FC = () => {
             }
           }
         });
+        // Orbital deflects enemy bullets
+        bulletsRef.current.forEach(b => {
+          if (!b.fromPlayer && b.active) {
+            const dx = bx - (b.x + b.width / 2);
+            const dy = by - (b.y + b.height / 2);
+            if (Math.sqrt(dx * dx + dy * dy) < ballRadius + 4) {
+              b.active = false;
+              particlesRef.current.push(
+                { x: b.x, y: b.y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, life: 0.5, color: '#00FF88' },
+                { x: b.x, y: b.y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, life: 0.5, color: '#FFFFFF' }
+              );
+            }
+          }
+        });
       }
     }
   };
